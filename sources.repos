@@ -1,0 +1,31 @@
+repositories:
+
+  segway_msgs:
+    type: git
+    url: https://github.com/LuckierDodge/segway_msgs.git
+    version: main
+
+  segwayrmp:
+    type: git
+    url: https://github.com/LuckierDodge/segwayrmp.git
+    version: main
+
+  RPlidar_ROS2:
+    type: git
+    url: https://github.com/Slamtec/sllidar_ros2.git
+    version: main
+
+  rmp220_teleop:
+    type: git
+    url: https://github.com/mul-cps/ros2_rmp_teleop.git
+    version: main
+
+  rmp220_middleware:
+    type: git
+    url: https://github.com/mul-cps/ros2_rmp_middleware.git
+    version: main
+
+  cps_rmp220_support:
+    type: git
+    url: https://github.com/mul-cps/ros2_rmp_support.git
+    version: main
