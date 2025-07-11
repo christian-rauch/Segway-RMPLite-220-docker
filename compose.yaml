@@ -1,0 +1,124 @@
+services:
+  base:
+    build: .
+    network_mode: host
+    ipc: host
+    environment:
+      - RMW_IMPLEMENTATION=rmw_zenoh_cpp
+    volumes:
+      - ./:/repo
+
+  zenoh_router:
+    extends: base
+    command: |
+      ros2 run rmw_zenoh_cpp rmw_zenohd
+
+  controller:
+    extends: base
+    depends_on: [zenoh_router]
+    devices:
+      - /dev/segway:/dev/ttyUSB1
+    command: |
+      ros2 run segwayrmp SmartCar --ros-args -r cmd_vel:=cmd_vel_out -p serial_full_name:=/dev/ttyUSB1
+
+  rsp:
+    extends: base
+    depends_on: [zenoh_router]
+    command: |
+      ros2 launch ros2_rmp_support rsp.launch.py
+
+  lidar:
+    extends: base
+    depends_on: [zenoh_router]
+    devices:
+      - /dev/rplidar:/dev/rplidar
+    command: |
+      ros2 launch ros2_rmp_support robot_lidar.launch.py serial_port:=/dev/rplidar
+
+  lidar_filter:
+    extends: base
+    depends_on: [lidar]
+    command: |
+      ros2 launch ros2_rmp_support robot_scan_filter.launch.py
+
+  orbbec:
+    extends: base
+    depends_on: [zenoh_router]
+    privileged: true
+    command: |
+      ros2 launch ros2_rmp_support femto.launch.py
+
+  teleop:
+    extends: base
+    depends_on:
+      - controller
+    devices:
+      - /dev/input/js0:/dev/input/js0
+    privileged: true
+    command: |
+      ros2 launch rmp220_teleop robot_joystick.launch.py
+
+  ekf:
+    extends: base
+    depends_on:
+      - controller
+      - rsp
+    command: |
+      ros2 launch ros2_rmp_support robot_localization.launch.py
+
+  mapping:
+    extends: base
+    depends_on:
+      - ekf
+      - rsp
+      - lidar_filter
+    command: |
+      ros2 launch ros2_rmp_support robot_mapping.launch.py
+
+  localization:
+    extends: base
+    depends_on:
+      - ekf
+      - rsp
+      - lidar_filter
+    command: >
+      ros2 launch ros2_rmp_support robot_mapping_localization.launch.py
+        map_file_name:=/repo/maps/map.yaml
+
+  amcl:
+    extends: base
+    depends_on:
+      - ekf
+      - rsp
+      - lidar_filter
+    command: >
+      ros2 launch ros2_rmp_support robot_amcl.launch.py
+        map:=/repo/maps/map.yaml
+
+  navigation:
+    extends: base
+    depends_on:
+      - controller
+      - teleop
+      - rsp
+      - lidar_filter
+      - ekf
+    command: >
+      ros2 launch nav2_bringup bringup_launch.py slam:=False
+        use_sim_time:=False use_composition:=True
+        params_file:=/repo/config/nav2_params.yaml
+        map:=/repo/maps/map_cps1stfloor.yaml
+
+  navigation-slam:
+    extends: base
+    depends_on:
+      - controller
+      - teleop
+      - rsp
+      - lidar_filter
+      - ekf
+    command: >
+      ros2 launch nav2_bringup bringup_launch.py slam:=True
+        use_sim_time:=False use_composition:=True
+        params_file:=/repo/config/nav2_params.yaml
+        map:=/repo/maps/map_cps1stfloor.yaml
