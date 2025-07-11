@@ -35,6 +35,11 @@ for type in "${!types[@]}"; do
 done
 EOF
 
+# manual runtime dependencies
+RUN rosdep resolve \
+        rmw_zenoh_cpp \
+    | grep -v '#' >> /tmp/exec_debs.txt
+
 # multi-stage for building
 FROM $FROM_IMAGE AS builder
 ARG OVERLAY_WS
