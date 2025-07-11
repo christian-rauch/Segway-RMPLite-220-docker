@@ -29,3 +29,8 @@ repositories:
     type: git
     url: https://github.com/mul-cps/ros2_rmp_support.git
     version: main
+
+  OrbbecSDK_ROS2:
+    type: git
+    url: https://github.com/orbbec/OrbbecSDK_ROS2.git
+    version: main
