@@ -69,6 +69,11 @@ RUN --mount=type=cache,target=/etc/apt/apt.conf.d,from=cacher,source=/etc/apt/ap
     --mount=type=cache,target=/var/cache/apt,sharing=locked \
     < /tmp/exec_debs.txt xargs apt install -y
 
+# the shared object file for the RMP (libctrl_*.so) execute "sudo" commands
+RUN apt update -y \
+  && apt install -y sudo \
+  && rm -rf /var/lib/apt/lists/*
+
 # setup overlay install
 ENV OVERLAY_WS=$OVERLAY_WS
 COPY --from=builder $OVERLAY_WS/install $OVERLAY_WS/install
