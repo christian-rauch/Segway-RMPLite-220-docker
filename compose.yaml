@@ -127,3 +127,13 @@ services:
         use_sim_time:=False use_composition:=True
         params_file:=/repo/config/nav2_params.yaml
         map:=/repo/maps/map_cps1stfloor.yaml
+
+  rviz2:
+    extends: base
+    environment:
+      DISPLAY: $DISPLAY
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority
+    command: |
+      ros2 launch ros2_rmp_support rviz.launch.py
