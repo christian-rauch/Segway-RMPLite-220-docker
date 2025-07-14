@@ -38,6 +38,7 @@ EOF
 # manual runtime dependencies
 RUN rosdep resolve \
         rmw_zenoh_cpp \
+        rosbag2 \
     | grep -v '#' >> /tmp/exec_debs.txt
 
 # multi-stage for building
