@@ -15,7 +15,7 @@ EOF
 # clone overlay source
 WORKDIR $OVERLAY_WS/src
 COPY sources.repos .
-RUN vcs import --input sources.repos
+RUN vcs import --recursive --shallow --input sources.repos
 
 # derive build/exec dependencies
 RUN bash -e <<'EOF'
