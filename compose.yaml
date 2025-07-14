@@ -13,6 +13,11 @@ services:
     command: |
       ros2 run rmw_zenoh_cpp rmw_zenohd
 
+  # use "docker compose run shell" to open a shell with sourced ROS environment
+  shell:
+    extends: base
+    depends_on: [zenoh_router]
+
   controller:
     extends: base
     depends_on: [zenoh_router]
