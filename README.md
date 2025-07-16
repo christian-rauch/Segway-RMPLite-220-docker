@@ -32,6 +32,14 @@ The Docker containers have the root folder of the repo mounted as a volume `/rep
 /repo/rgbd_log.sh /repo/bags/$MY_BAG_FILE
 ```
 
+You can also combine these commands and run arbitrary scripts or launch files mounted from outside:
+```sh
+# run a custom script
+docker compose run shell /repo/rgbd_log.sh /repo/bags/$MY_BAG_FILE
+# run a custom launch file
+docker compose run shell ros2 launch /repo/femto_NFOV_binned.launch.py
+```
+
 Navigation:
 ```sh
 docker compose up -d navigation
