@@ -17,6 +17,7 @@ services:
   shell:
     extends: base
     depends_on: [zenoh_router]
+    privileged: true
 
   controller:
     extends: base
